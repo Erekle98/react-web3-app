@@ -5,8 +5,10 @@ import { web3 } from "../ethereum/web3";
 import { metamaskProvider } from "../ethereum/provider";
 import CopyToolTip from "./helpers/CopyToolTip";
 import "../components/helpers/CopyToolTip.css";
+import { getAccount } from "../ethereum/helperFuncs";
+import { CHAIN_ID, CHAIN_ID_HEX } from "../constants";
 
-const Connection = () => {
+const Connection = (props) => {
   const [connected, setConnected] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [toolTipText, setToolTipText] = useState("Copy to clipboard");
@@ -21,7 +23,7 @@ const Connection = () => {
     });
 
     metamaskProvider().on("chainChanged", (chainId) => {
-      if (chainId !== "0x5") {
+      if (chainId !== CHAIN_ID_HEX) {
         notConnected();
         connectToGoerli();
       } else {
@@ -30,14 +32,10 @@ const Connection = () => {
     });
   }, []);
 
-  const getAccount = async () => {
-    const accounts = await web3.eth.getAccounts();
-    return accounts[0];
-  };
-
   const isConnected = async (currentAccount) => {
     if (currentAccount) {
       setConnected(true);
+      props.onConnect(true);
       setCurrentAccount(currentAccount);
       connectButtonRef.current.ref.current.innerText =
         currentAccount.substring(0, 6) + "..." + currentAccount.substring(38, 42);
@@ -47,6 +45,7 @@ const Connection = () => {
 
   const notConnected = () => {
     setConnected(false);
+    props.onConnect(false);
     setCurrentAccount("");
     connectButtonRef.current.ref.current.innerText = "Connect to wallet";
     connectButtonRef.current.ref.current.disabled = false;
@@ -57,7 +56,7 @@ const Connection = () => {
       await metamaskProvider()
         .request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x5" }],
+          params: [{ chainId: CHAIN_ID_HEX }],
         })
         .then(async () => {
           isConnected(await getAccount());
@@ -72,7 +71,7 @@ const Connection = () => {
   const checkConnection = async () => {
     const account = await getAccount();
     if (account) {
-      if ((await web3.eth.net.getId()) === 5) {
+      if ((await web3.eth.net.getId()) === CHAIN_ID) {
         isConnected(account);
       }
     } else {
@@ -84,7 +83,7 @@ const Connection = () => {
     try {
       await metamaskProvider().request({ method: "eth_requestAccounts" });
       const account = await getAccount();
-      if ((await web3.eth.net.getId()) === 5) {
+      if ((await web3.eth.net.getId()) === CHAIN_ID) {
         isConnected(account);
       } else {
         connectToGoerli().catch((error) => {
