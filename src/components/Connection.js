@@ -12,11 +12,13 @@ const Connection = (props) => {
   const [connected, setConnected] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [toolTipText, setToolTipText] = useState("Copy to clipboard");
+  const [networkType, setNetworkType] = useState("");
 
   const connectButtonRef = useRef(null);
 
   useEffect(() => {
     checkConnection();
+    checkNetworkType();
 
     metamaskProvider().on("accountsChanged", () => {
       checkConnection();
@@ -25,12 +27,16 @@ const Connection = (props) => {
     metamaskProvider().on("chainChanged", (chainId) => {
       if (chainId !== CHAIN_ID_HEX) {
         notConnected();
-        connectToGoerli();
+        // connectToGoerli();
       } else {
         checkConnection();
       }
     });
   }, []);
+
+  const checkNetworkType = async () => {
+    setNetworkType(await web3.eth.net.getNetworkType());
+  };
 
   const isConnected = async (currentAccount) => {
     if (currentAccount) {

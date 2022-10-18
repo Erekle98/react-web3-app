@@ -5,6 +5,8 @@ import { metamaskProvider } from "../ethereum/provider";
 import { WarningMessage } from "./helpers/Message";
 import Connection from "./Connection";
 import Mint from "./Mint";
+import ListMintedTokens from "./ListMintedTokens";
+import Merge from "./Merge";
 
 const App = () => {
   const [connected, setConnected] = useState(false);
@@ -19,6 +21,8 @@ const App = () => {
       <Container>
         <Connection onConnect={handleConnect} />
         {connected ? <Mint /> : null}
+        {connected ? <ListMintedTokens /> : null}
+        {connected ? <Merge /> : null}
       </Container>
     );
   }

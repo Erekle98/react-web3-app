@@ -57,4 +57,14 @@ export const CONTRACT_ABI = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      { internalType: "uint256", name: "tokenId1", type: "uint256" },
+      { internalType: "uint256", name: "tokenId2", type: "uint256" },
+    ],
+    name: "merge",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];

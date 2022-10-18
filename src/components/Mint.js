@@ -13,6 +13,7 @@ const Mint = () => {
 
   const increaseRef = useRef(null);
   const decreaseRef = useRef(null);
+  const mintRef = useRef(null);
 
   useEffect(() => {
     getIfMintEnabled();
@@ -93,10 +94,10 @@ const Mint = () => {
   return (
     <div>
       {mintEnabled ? (
-        <Modal trigger={<Button>Mint Now</Button>}>
+        <Modal trigger={<Button ref={mintRef}>Mint Now</Button>}>
           <Modal.Header>Mint</Modal.Header>
           {mintedTokensByAddress === MAX_MINT_QTY.toString() ? (
-            <Modal.Content>You have already minted max number of NFTs</Modal.Content>
+            disableButton(mintRef)
           ) : (
             <Modal.Content>
               <Button ref={increaseRef} onClick={increaseMinQty}>
