@@ -12,6 +12,7 @@ import Merge from "./Merge";
 const App = () => {
   const [connected, setConnected] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
+
   const [newMint, setNewMint] = useState(false);
   const [newMerge, setNewMerge] = useState(false);
 

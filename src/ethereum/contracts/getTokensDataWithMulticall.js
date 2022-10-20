@@ -1,31 +1,23 @@
-import { web3 } from "../web3";
 import contract from "./contract";
-import { CONTRACT_ADDRESS } from "../../constants";
-import multicall from "../multicall";
-import { getAccount } from "../helperFuncs";
+import { ethersProvider } from "../provider";
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from "../../constants";
+import { Contract, Provider } from "ethcall";
 
-const getDataWithMulticall = async (setState) => {
-  const multicallData = async () => {
-    const totalTokensMinted = await contract.methods.totalTokensMinted().call();
-    let data = [];
-    for (let i = 1; i <= totalTokensMinted; i++) {
-      data.push({
-        target: CONTRACT_ADDRESS,
-        callData: contract.methods.ownerOf(i).encodeABI(),
-      });
-    }
-    return data;
-  };
-
-  const data = await multicall.methods.tryAggregate(false, await multicallData()).call();
+const getDataWithMulticall = async (setState, currentAccount) => {
+  const provider = new Provider();
+  provider.init(ethersProvider());
+  const multicallContract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI);
+  const totalTokensMinted = await contract.totalTokensMinted();
+  const data = await provider.tryAll(
+    Array.from({ length: totalTokensMinted }, (_, i) => {
+      return multicallContract.ownerOf(i + 1);
+    })
+  );
 
   let mintedTokenIds = [];
   for (let index in data) {
-    if (data[index].success) {
-      const owner = web3.eth.abi.decodeParameter("address", data[index].returnData);
-      if (owner === (await getAccount())) {
-        mintedTokenIds.push(parseInt(index) + 1);
-      }
+    if (data[index] && data[index] === currentAccount) {
+      mintedTokenIds.push(parseInt(index) + 1);
     }
   }
   setState(mintedTokenIds);

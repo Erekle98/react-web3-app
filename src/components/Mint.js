@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Modal } from "semantic-ui-react";
 
-import { web3 } from "../ethereum/web3";
+import { ethers } from "ethers";
 import contract from "../ethereum/contracts/contract";
-import { getMintedTokensByAddress } from "../ethereum/helperFuncs";
+import { getMintedTokensByAddress, getPriceAndMaxPerAddress } from "../ethereum/helperFuncs";
 import { MIN_MINT_QTY } from "../constants";
-import { getPriceAndMaxPerAddress } from "../ethereum/helperFuncs";
+import { ethersProvider } from "../ethereum/provider";
 
 const Mint = ({ currentAccount, onNewMint }) => {
   const [mintEnabled, setMintEnabled] = useState(false);
@@ -42,16 +42,16 @@ const Mint = ({ currentAccount, onNewMint }) => {
   //   Contract functions
 
   const getIfMintEnabled = async () => {
-    const isMintEnabled = await contract.methods.isMintEnabled().call();
+    const isMintEnabled = await contract.isMintEnabled();
     setMintEnabled(isMintEnabled);
   };
 
   const mint = async (e) => {
     addLoading(e);
     try {
-      await contract.methods
-        .mint(mintQty)
-        .send({ from: currentAccount, value: web3.utils.toWei(mintPrice.toString(), "ether") * mintQty });
+      await contract.connect(ethersProvider().getSigner()).mint(mintQty, {
+        value: parseInt(ethers.utils.parseEther(mintPrice).toString()) * mintQty,
+      });
       setNewMint(true);
       onNewMint(true);
     } catch (error) {

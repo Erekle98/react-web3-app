@@ -13,7 +13,7 @@ const ListMintedTokens = ({ currentAccount, newMint, newMerge }) => {
   }, []);
 
   useEffect(() => {
-    getDataWithMulticall(setAddressMintedTokenIds);
+    getDataWithMulticall(setAddressMintedTokenIds, currentAccount);
     if (currentAccount) {
       getMintedTokensByAddress(setMintedTokensByAddress, currentAccount);
     }

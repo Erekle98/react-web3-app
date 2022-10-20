@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "semantic-ui-react";
 
-import { web3 } from "../ethereum/web3";
-import { metamaskProvider } from "../ethereum/provider";
+import { metamaskProvider, ethersProvider } from "../ethereum/provider";
 import CopyToolTip from "./helpers/CopyToolTip";
 import "../components/helpers/CopyToolTip.css";
 import { getAccount } from "../ethereum/helperFuncs";
@@ -35,7 +34,7 @@ const Connection = ({ onAccountChange, onConnect }) => {
   // Helper functions
 
   const checkNetworkType = async () => {
-    setNetworkType(await web3.eth.net.getNetworkType());
+    setNetworkType((await ethersProvider().getNetwork()).name);
   };
 
   const isConnected = async (currentAccount) => {
@@ -50,15 +49,6 @@ const Connection = ({ onAccountChange, onConnect }) => {
     setConnected(false);
     onConnect(false);
     setCurrentAccount("");
-  };
-
-  const copy = async (e) => {
-    console.log(e.target);
-    navigator.clipboard.writeText(currentAccount);
-    e.target.lastChild.nodeValue = "Copied!";
-    setTimeout(() => {
-      e.target.lastChild.nodeValue = "Copy to clipboard";
-    }, 1000);
   };
 
   // Connect Functions
@@ -84,7 +74,7 @@ const Connection = ({ onAccountChange, onConnect }) => {
     const account = await getAccount();
     onAccountChange(account);
     if (account) {
-      if ((await web3.eth.net.getId()) === CHAIN_ID) {
+      if ((await ethersProvider().getNetwork()).chainId === CHAIN_ID) {
         isConnected(account);
       }
     } else {
@@ -97,7 +87,7 @@ const Connection = ({ onAccountChange, onConnect }) => {
       await metamaskProvider().request({ method: "eth_requestAccounts" });
       const account = await getAccount();
       onAccountChange(account);
-      if ((await web3.eth.net.getId()) === CHAIN_ID) {
+      if ((await ethersProvider().getNetwork()).chainId === CHAIN_ID) {
         isConnected(account);
       } else {
         connectToGoerli().catch((error) => {

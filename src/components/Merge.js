@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import contract from "../ethereum/contracts/contract";
 import getDataWithMulticall from "../ethereum/contracts/getTokensDataWithMulticall";
+import { ethersProvider } from "../ethereum/provider";
 
 const Merge = ({ currentAccount, newMint, onNewMerge }) => {
   const [addressMintedTokenIds, setAddressMintedTokenIds] = useState([]);
@@ -9,7 +10,7 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
   const [newMerge, setNewMerge] = useState(false);
 
   useEffect(() => {
-    getDataWithMulticall(setAddressMintedTokenIds);
+    getDataWithMulticall(setAddressMintedTokenIds, currentAccount);
   }, [currentAccount, newMint, newMerge]);
 
   const ref1Select = useRef(null);
@@ -71,7 +72,7 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
     const tokenId2 = ref2Select.current.value;
     addLoading(e);
     try {
-      await contract.methods.merge(tokenId1, tokenId2).send({ from: currentAccount });
+      await contract.connect(ethersProvider().getSigner()).merge(tokenId1, tokenId2);
       setNewMerge(true);
       onNewMerge(true);
     } catch (error) {

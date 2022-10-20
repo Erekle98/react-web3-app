@@ -1,35 +1,35 @@
-import { web3 } from "./web3";
+import { ethers } from "ethers";
+
 import contract from "./contracts/contract";
-import multicall from "./multicall";
-import { CONTRACT_ADDRESS } from "../constants";
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from "../constants";
+import { ethersProvider } from "./provider";
+import { Contract, Provider } from "ethcall";
 
 export const getAccount = async () => {
-  const accounts = await web3.eth.getAccounts();
-  return accounts[0];
+  try {
+    const signer = ethersProvider().getSigner();
+    const account = await signer.getAddress();
+    return account;
+  } catch (error) {
+    return;
+  }
 };
 
 export const getMintedTokensByAddress = async (setState, currentAccount) => {
-  const mintedTokens = await contract.methods.tokensMintedByAddress(currentAccount).call();
-  setState(mintedTokens);
+  const mintedTokens = await contract.tokensMintedByAddress(currentAccount);
+  setState(mintedTokens.toString());
 };
 
 export const getPriceAndMaxPerAddress = async (setPrice, setMaxPerWallet) => {
-  const calls = [
-    {
-      target: CONTRACT_ADDRESS,
-      callData: contract.methods.price().encodeABI(),
-    },
-    {
-      target: CONTRACT_ADDRESS,
-      callData: contract.methods.maxPerWallet().encodeABI(),
-    },
-  ];
-  const [price, maxPerWallet] = await multicall.methods.tryAggregate(true, calls).call();
-  setPrice(web3.utils.fromWei(web3.eth.abi.decodeParameter("uint256", price.returnData), "ether"));
-  setMaxPerWallet(web3.eth.abi.decodeParameter("uint256", maxPerWallet.returnData));
+  const provider = new Provider();
+  provider.init(ethersProvider());
+  const multicallContract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI);
+  const [price, maxPerWallet] = await provider.all([multicallContract.price(), multicallContract.maxPerWallet()]);
+  setPrice(ethers.utils.formatEther(price.toString()));
+  setMaxPerWallet(maxPerWallet.toString());
 };
 
 export const getMaxPerAddress = async (setState) => {
-  const maxPerWallet = await contract.methods.maxPerWallet().call();
+  const maxPerWallet = await contract.maxPerWallet();
   setState(maxPerWallet);
 };

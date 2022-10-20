@@ -1,11 +1,18 @@
+import { ethers } from "ethers";
+
 export const metamaskProvider = () => {
-  let provider;
+  let metamaskProvider;
   if (window.ethereum) {
     if (window.ethereum.isMetaMask && !window.ethereum.providers) {
-      provider = window.ethereum;
+      metamaskProvider = window.ethereum;
     } else if (window.ethereum.providers) {
-      provider = window.ethereum.providers.find((provider) => provider.isMetaMask);
+      metamaskProvider = window.ethereum.providers.find((provider) => provider.isMetaMask);
     }
-    return provider;
+    return metamaskProvider;
   }
+};
+
+export const ethersProvider = () => {
+  const provider = metamaskProvider();
+  return new ethers.providers.Web3Provider(provider);
 };
