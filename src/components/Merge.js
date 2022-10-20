@@ -3,13 +3,14 @@ import { Modal, Button } from "semantic-ui-react";
 import contract from "../ethereum/contracts/contract";
 import getDataWithMulticall from "../ethereum/contracts/getTokensDataWithMulticall";
 
-const Merge = ({ currentAccount }) => {
+const Merge = ({ currentAccount, newMint, onNewMerge }) => {
   const [addressMintedTokenIds, setAddressMintedTokenIds] = useState([]);
   const [disableMergeBtn, setDisableMergeBtn] = useState(true);
+  const [newMerge, setNewMerge] = useState(false);
 
   useEffect(() => {
     getDataWithMulticall(setAddressMintedTokenIds);
-  }, [currentAccount]);
+  }, [currentAccount, newMint, newMerge]);
 
   const ref1Select = useRef(null);
   const ref2Select = useRef(null);
@@ -35,7 +36,7 @@ const Merge = ({ currentAccount }) => {
     }
   };
 
-  const mintedTokensToMergeDropdown = () => {
+  const mintedTokensInMergeDropdown = () => {
     const defaultOption = (
       <option key="default" value="default" disabled hidden>
         Select Token To Merge
@@ -71,10 +72,10 @@ const Merge = ({ currentAccount }) => {
     addLoading(e);
     try {
       await contract.methods.merge(tokenId1, tokenId2).send({ from: currentAccount });
+      setNewMerge(true);
+      onNewMerge(true);
     } catch (error) {
       alert(error.message);
-      removeLoading(e);
-      return;
     }
     removeLoading(e);
   };
@@ -89,12 +90,12 @@ const Merge = ({ currentAccount }) => {
       <Modal.Header>Merge</Modal.Header>
       <Modal.Content>
         <Modal.Description>
-          <h3>Select the tokens you want to merge</h3>
+          <h3>Select tokens you want to merge</h3>
           <select ref={ref1Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref2Select)}>
-            {mintedTokensToMergeDropdown()}
+            {mintedTokensInMergeDropdown()}
           </select>
           <select ref={ref2Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref1Select)}>
-            {mintedTokensToMergeDropdown()}
+            {mintedTokensInMergeDropdown()}
           </select>
         </Modal.Description>
       </Modal.Content>

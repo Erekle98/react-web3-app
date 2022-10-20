@@ -1,6 +1,4 @@
-export const MAX_MINT_QTY = 10;
 export const MIN_MINT_QTY = 1;
-export const MINT_PRICE = 0.001;
 export const CHAIN_ID = 5;
 export const CHAIN_ID_HEX = "0x5";
 export const CONTRACT_ADDRESS = "0x86eA8e384d79dfa88fab382E43468e138B86B793";

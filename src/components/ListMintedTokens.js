@@ -3,7 +3,7 @@ import getDataWithMulticall from "../ethereum/contracts/getTokensDataWithMultica
 import { getMintedTokensByAddress } from "../ethereum/helperFuncs";
 import { getMaxPerAddress } from "../ethereum/helperFuncs";
 
-const ListMintedTokens = ({ currentAccount }) => {
+const ListMintedTokens = ({ currentAccount, newMint, newMerge }) => {
   const [addressMintedTokenIds, setAddressMintedTokenIds] = useState([]);
   const [mintedTokensByAddress, setMintedTokensByAddress] = useState(0);
   const [maxMintQty, setMaxMintQty] = useState("");
@@ -17,7 +17,7 @@ const ListMintedTokens = ({ currentAccount }) => {
     if (currentAccount) {
       getMintedTokensByAddress(setMintedTokensByAddress, currentAccount);
     }
-  }, [currentAccount]);
+  }, [currentAccount, newMint, newMerge]);
 
   const listMintedTokens = () => {
     if (addressMintedTokenIds.length > 0) {

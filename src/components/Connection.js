@@ -8,7 +8,7 @@ import "../components/helpers/CopyToolTip.css";
 import { getAccount } from "../ethereum/helperFuncs";
 import { CHAIN_ID, CHAIN_ID_HEX } from "../constants";
 
-const Connection = (props) => {
+const Connection = ({ onAccountChange, onConnect }) => {
   const [connected, setConnected] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [networkType, setNetworkType] = useState("");
@@ -20,7 +20,7 @@ const Connection = (props) => {
     metamaskProvider().on("accountsChanged", (accounts) => {
       checkConnection();
       setCurrentAccount(accounts[0]);
-      props.onAccountChange(accounts[0]);
+      onAccountChange(accounts[0]);
     });
 
     metamaskProvider().on("chainChanged", (chainId) => {
@@ -41,22 +41,23 @@ const Connection = (props) => {
   const isConnected = async (currentAccount) => {
     if (currentAccount) {
       setConnected(true);
-      props.onConnect(true);
+      onConnect(true);
       setCurrentAccount(currentAccount);
     }
   };
 
   const notConnected = () => {
     setConnected(false);
-    props.onConnect(false);
+    onConnect(false);
     setCurrentAccount("");
   };
 
   const copy = async (e) => {
+    console.log(e.target);
     navigator.clipboard.writeText(currentAccount);
-    e.target.firstChild.nodeValue = "Copied!";
+    e.target.lastChild.nodeValue = "Copied!";
     setTimeout(() => {
-      e.target.firstChild.nodeValue = "Copy to clipboard";
+      e.target.lastChild.nodeValue = "Copy to clipboard";
     }, 1000);
   };
 
@@ -81,7 +82,7 @@ const Connection = (props) => {
 
   const checkConnection = async () => {
     const account = await getAccount();
-    props.onAccountChange(account);
+    onAccountChange(account);
     if (account) {
       if ((await web3.eth.net.getId()) === CHAIN_ID) {
         isConnected(account);
@@ -95,7 +96,7 @@ const Connection = (props) => {
     try {
       await metamaskProvider().request({ method: "eth_requestAccounts" });
       const account = await getAccount();
-      props.onAccountChange(account);
+      onAccountChange(account);
       if ((await web3.eth.net.getId()) === CHAIN_ID) {
         isConnected(account);
       } else {
@@ -116,7 +117,7 @@ const Connection = (props) => {
         <div>
           Connected to {networkType} network with account:{" "}
           {currentAccount ? currentAccount.substring(0, 6) + "..." + currentAccount.substring(38, 42) : null}
-          <CopyToolTip onClick={copy} />
+          <CopyToolTip textToCopy={currentAccount} />
         </div>
       ) : (
         <Button onClick={connect} color="green">
