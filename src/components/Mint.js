@@ -3,30 +3,31 @@ import { Button, Modal } from "semantic-ui-react";
 
 import { web3 } from "../ethereum/web3";
 import contract from "../ethereum/contracts/contract";
-import { getAccount } from "../ethereum/helperFuncs";
-import { MAX_MINT_QTY, MIN_MINT_QTY, MINT_PRICE } from "../constants";
+import { getMintedTokensByAddress } from "../ethereum/helperFuncs";
+import { MIN_MINT_QTY } from "../constants";
+import ListMintedTokens from "./ListMintedTokens";
+import { getPriceAndMaxPerAddress } from "../ethereum/helperFuncs";
 
-const Mint = () => {
+const Mint = ({ currentAccount }) => {
   const [mintEnabled, setMintEnabled] = useState(false);
   const [mintQty, setMintQty] = useState(1);
+  const [maxMintQty, setMaxMintQty] = useState("");
   const [mintedTokensByAddress, setMintedTokensByAddress] = useState(0);
+  const [mintPrice, setMintPrice] = useState("");
 
   const increaseRef = useRef(null);
   const decreaseRef = useRef(null);
-  const mintRef = useRef(null);
 
   useEffect(() => {
     getIfMintEnabled();
+    getPriceAndMaxPerAddress(setMintPrice, setMaxMintQty);
   }, []);
 
   useEffect(() => {
-    getMintedTokensByAddress();
-  }, [mintedTokensByAddress]);
-
-  const getMintedTokensByAddress = async () => {
-    const mintedTokens = await contract.methods.tokensMintedByAddress(await getAccount()).call();
-    setMintedTokensByAddress(mintedTokens);
-  };
+    if (currentAccount) {
+      getMintedTokensByAddress(setMintedTokensByAddress, currentAccount);
+    }
+  }, [mintedTokensByAddress, currentAccount]);
 
   //   Helper functions
 
@@ -43,10 +44,10 @@ const Mint = () => {
   };
 
   const increaseMinQty = () => {
-    if (mintQty < MAX_MINT_QTY - mintedTokensByAddress) {
+    if (mintQty < maxMintQty - mintedTokensByAddress) {
       setMintQty(mintQty + 1);
       enableButton(decreaseRef);
-      if (mintQty === MAX_MINT_QTY - mintedTokensByAddress - 1) {
+      if (mintQty === maxMintQty - mintedTokensByAddress - 1) {
         disableButton(increaseRef);
       }
     }
@@ -82,7 +83,7 @@ const Mint = () => {
     try {
       await contract.methods
         .mint(mintQty)
-        .send({ from: await getAccount(), value: web3.utils.toWei(MINT_PRICE.toString(), "ether") * mintQty });
+        .send({ from: currentAccount, value: web3.utils.toWei(mintPrice.toString(), "ether") * mintQty });
     } catch (error) {
       alert(error.message);
       removeLoading(e);
@@ -94,32 +95,52 @@ const Mint = () => {
   return (
     <div>
       {mintEnabled ? (
-        <Modal trigger={<Button ref={mintRef}>Mint Now</Button>}>
-          <Modal.Header>Mint</Modal.Header>
-          {mintedTokensByAddress === MAX_MINT_QTY.toString() ? (
-            disableButton(mintRef)
-          ) : (
-            <Modal.Content>
-              <Button ref={increaseRef} onClick={increaseMinQty}>
-                +
-              </Button>
-              <div>{mintQty}</div>
-              <Button ref={decreaseRef} onClick={decreaseMinQty}>
-                -
-              </Button>
-              <Button
-                onClick={(e) => {
-                  mint(e);
-                }}
-              >
-                Mint
-              </Button>
-              <p>
-                <b>Total Price: {(mintQty * MINT_PRICE).toFixed(3)} ETH</b>
-              </p>
-            </Modal.Content>
-          )}
-        </Modal>
+        parseInt(mintedTokensByAddress) < parseInt(maxMintQty) ? (
+          <div>
+            <Modal trigger={<Button>Mint</Button>}>
+              <Modal.Header>Mint</Modal.Header>
+              <Modal.Content>
+                <Modal.Description>
+                  <p>
+                    Mint Price: {mintPrice} ETH
+                    <br />
+                    Max Mints Per Wallet: {maxMintQty}
+                    <br />
+                    Minted Tokens By Address: {mintedTokensByAddress}
+                    <br />
+                    <br />
+                  </p>
+                  <Button.Group>
+                    <Button ref={decreaseRef} onClick={decreaseMinQty}>
+                      -
+                    </Button>
+                    <Button color="grey" disabled>
+                      {mintQty}
+                    </Button>
+                    <Button ref={increaseRef} onClick={increaseMinQty}>
+                      +
+                    </Button>
+                  </Button.Group>
+                </Modal.Description>
+                <Button
+                  onClick={(e) => {
+                    mint(e);
+                  }}
+                >
+                  Mint Now
+                </Button>
+                <p>
+                  <b>Total Price: {(mintQty * mintPrice).toFixed(3)} ETH</b>
+                </p>
+              </Modal.Content>
+            </Modal>
+            <div>
+              <ListMintedTokens currentAccount={currentAccount} />
+            </div>
+          </div>
+        ) : (
+          <Button disabled>Mint Now</Button>
+        )
       ) : (
         "Mint is not enabled"
       )}

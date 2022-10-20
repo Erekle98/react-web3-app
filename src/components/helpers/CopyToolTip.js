@@ -4,10 +4,10 @@ import { Icon } from "semantic-ui-react";
 import "./CopyToolTip.css";
 import "../../Main.css";
 
-const CopyToolTip = ({ text, onClick }) => {
+const CopyToolTip = ({ onClick }) => {
   return (
     <Icon name="copy" onClick={onClick} className="ToolTip pointer">
-      <div className="ToolTipText">{text}</div>
+      <div className="ToolTipText">Copy to clipboard</div>
     </Icon>
   );
 };
