@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
 import contract from "./contracts/contract";
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from "../constants";
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from "./contracts/constants";
 import { ethersProvider } from "./provider";
 import { Contract, Provider } from "ethcall";
 
@@ -20,16 +20,38 @@ export const getMintedTokensByAddress = async (setState, currentAccount) => {
   setState(mintedTokens.toString());
 };
 
-export const getPriceAndMaxPerAddress = async (setPrice, setMaxPerWallet) => {
+export const getPriceAndMaxPerAddress = async (setPrice, setMaxPerWallet, setLoading) => {
   const provider = new Provider();
   provider.init(ethersProvider());
   const multicallContract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI);
   const [price, maxPerWallet] = await provider.all([multicallContract.price(), multicallContract.maxPerWallet()]);
   setPrice(ethers.utils.formatEther(price.toString()));
   setMaxPerWallet(maxPerWallet.toString());
+  setLoading(false);
 };
 
 export const getMaxPerAddress = async (setState) => {
   const maxPerWallet = await contract.maxPerWallet();
   setState(maxPerWallet);
+};
+
+export const getDataWithMulticall = async (setState, currentAccount, onLoading) => {
+  const provider = new Provider();
+  provider.init(ethersProvider());
+  const multicallContract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI);
+  const totalTokensMinted = await contract.totalTokensMinted();
+  const data = await provider.tryAll(
+    Array.from({ length: totalTokensMinted }, (_, i) => {
+      return multicallContract.ownerOf(i + 1);
+    })
+  );
+
+  let mintedTokenIds = [];
+  for (let index in data) {
+    if (data[index] && data[index] === currentAccount) {
+      mintedTokenIds.push(parseInt(index) + 1);
+    }
+  }
+  setState(mintedTokenIds);
+  onLoading();
 };

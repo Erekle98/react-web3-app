@@ -13,6 +13,7 @@ export const metamaskProvider = () => {
 };
 
 export const ethersProvider = () => {
-  const provider = metamaskProvider();
-  return new ethers.providers.Web3Provider(provider);
+  if (metamaskProvider()) {
+    return new ethers.providers.Web3Provider(metamaskProvider());
+  }
 };
