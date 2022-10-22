@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 
-import contract from "../ethereum/contracts/contract";
-import { getDataWithMulticall } from "../ethereum/helperFuncs";
-import { ethersProvider } from "../ethereum/provider";
-import Button from "./button/Button";
+import contract from "../../ethereum/contracts/contract";
+import { getDataWithMulticall } from "../../ethereum/helperFuncs";
+import { ethersProvider } from "../../ethereum/provider";
+import Button from "../button/Button";
+import "./Merge.css";
 
 const Merge = ({ currentAccount, newMint, onNewMerge }) => {
   const [addressMintedTokenIds, setAddressMintedTokenIds] = useState([]);
@@ -14,13 +15,17 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    getDataWithMulticall(setAddressMintedTokenIds, currentAccount, setLoading);
+    getDataWithMulticall(setAddressMintedTokenIds, currentAccount, handleLoading);
   }, [currentAccount, newMint, newMerge]);
 
   let history = useHistory();
 
   const ref1Select = useRef(null);
   const ref2Select = useRef(null);
+
+  const handleLoading = () => {
+    setLoading(false);
+  };
 
   const addLoading = () => {
     setIsSubmitting(true);
@@ -93,19 +98,30 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
   };
 
   return (
-    <div>
-      <h1>Merge</h1>
-      <h3>Select tokens you want to merge</h3>
-      <select ref={ref1Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref2Select)}>
-        {mintedTokensInMergeDropdown()}
-      </select>
-      <select ref={ref2Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref1Select)}>
-        {mintedTokensInMergeDropdown()}
-      </select>
-      <Button isSubmitting={isSubmitting} className={disableMergeBtn ? "disabled" : ""} onClick={merge}>
-        Merge
-      </Button>
-    </div>
+    <>
+      {!loading && (
+        <div className="Merge_Main">
+          <div className="Merge-title">Merge</div>
+          <div className="Merge-box">
+            <div className="Merge-box-title">Select tokens you want to merge</div>
+            <div className="Merge-box-selectDiv">
+              <select ref={ref1Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref2Select)}>
+                {mintedTokensInMergeDropdown()}
+              </select>
+              <b>to</b>
+              <select ref={ref2Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref1Select)}>
+                {mintedTokensInMergeDropdown()}
+              </select>
+            </div>
+            <div className="Merge-box-buttonDiv">
+              <Button isSubmitting={isSubmitting} className={disableMergeBtn ? "disabled" : ""} onClick={merge}>
+                Merge
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
