@@ -1,0 +1,80 @@
+.Header {
+    color: #fcfcfe;
+    background-color: #1f1e25;
+    border-bottom: 1px solid #2a2930;
+    transition: border-color 0.1s ease-in-out;
+    width: 100%;
+    z-index: 1;
+}
+
+.Header-width {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1400px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Header-left {
+    display: flex;
+    float: left;
+    align-items: center;
+}
+
+.Header-left a {
+    display: flex;
+    color: #fcfcfe;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    text-align: center;
+    align-items: center;
+    text-decoration: none;
+    transition: color 0.1s ease-in-out;
+}
+
+.Header-right {
+    display: flex;
+    float: right;
+    align-items: center;
+    margin-right: 30px;
+}
+
+.Header-logo svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.Header-title {
+    background: -webkit-linear-gradient(rgb(63, 201, 168), rgb(28, 162, 196));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 26px;
+}
+
+@media (min-width: 1008px) {
+    .Header-width {
+        padding: 20px 40px;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1007px) {
+    .Header-width {
+        padding: 15px 30px;
+    }
+}
+
+@media (max-width: 640px) {
+    .Header-width {
+        padding: 10px 20px;
+    }
+
+    .Header-right {
+        margin-right: 0;
+    }
+}
