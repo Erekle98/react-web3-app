@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { CopySvg } from "../../../assets/icons";
+import { CopySvg } from "../../assets/icons";
 
 import "./CopyToolTip.css";
 

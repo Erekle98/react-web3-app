@@ -1,5 +1,5 @@
 import React from "react";
-import { WarningSvg } from "../../../assets/icons";
+import { WarningSvg } from "../../assets/icons";
 
 import "./NoMetamaskMessage.css";
 

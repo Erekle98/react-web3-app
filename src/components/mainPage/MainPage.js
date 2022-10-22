@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import ListMintedTokens from "./ListMintedTokens";
-import { getMintedTokensByAddress, getMaxPerAddress } from "../ethereum/helperFuncs";
-import Button from "./button/Button";
+import ListMintedTokens from "../listMintedTokens/ListMintedTokens";
+import { getMintedTokensByAddress, getMaxPerAddress } from "../../ethereum/helperFuncs";
+import Button from "../button/Button";
+import "./MainPage.css";
 
 const MainPage = ({ currentAccount, newMint, newMerge }) => {
   const [mintedTokensByAddress, setMintedTokensByAddress] = useState(0);
@@ -25,7 +26,7 @@ const MainPage = ({ currentAccount, newMint, newMerge }) => {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div className="MainPage_Main">
       <ListMintedTokens
         currentAccount={currentAccount}
         newMint={newMint}
@@ -34,18 +35,18 @@ const MainPage = ({ currentAccount, newMint, newMerge }) => {
         onLoading={handleLoading}
       />
       {!loading && (
-        <>
+        <div className="MainPage-bottom">
           {parseInt(mintedTokensByAddress) < parseInt(maxMintQty) ? (
             <Link to="/mint">
-              <Button>Mint</Button>
+              <Button className="BigButton">Mint</Button>
             </Link>
           ) : (
-            <Button className="disabled">Mint</Button>
+            <Button className="BigButton disabled">Mint</Button>
           )}
           <Link to="/merge">
-            <Button>Merge</Button>
+            <Button className="BigButton">Merge</Button>
           </Link>
-        </>
+        </div>
       )}
     </div>
   );

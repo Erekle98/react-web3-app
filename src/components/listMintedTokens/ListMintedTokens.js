@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getDataWithMulticall, getMintedTokensByAddress, getMaxPerAddress } from "../ethereum/helperFuncs";
+import { getDataWithMulticall, getMintedTokensByAddress, getMaxPerAddress } from "../../ethereum/helperFuncs";
+import "./ListMintedTokens.css";
 
 const ListMintedTokens = ({ currentAccount, newMint, newMerge, loading, onLoading }) => {
   const [addressMintedTokenIds, setAddressMintedTokenIds] = useState([]);
@@ -19,15 +20,16 @@ const ListMintedTokens = ({ currentAccount, newMint, newMerge, loading, onLoadin
 
   const listMintedTokens = () => {
     if (addressMintedTokenIds.length > 0) {
-      return (
-        <ul>
-          {addressMintedTokenIds.map((tokenId, index) => (
-            <li key={index}>TokenID: {tokenId}</li>
-          ))}
-        </ul>
-      );
+      return addressMintedTokenIds.map((tokenId, index) => (
+        <div key={index} className="ListMintedTokens-item">
+          <div className="ListMintedTokens-item-content">
+            <div className="ListMintedTokens-item-title">Token</div>
+            <div className="ListMintedTokens-item-value">#{tokenId}</div>
+          </div>
+        </div>
+      ));
     } else {
-      return <p>You have not minted any tokens yet</p>;
+      return <div className="ListMintedTokens-noMinted">You have not minted any tokens yet</div>;
     }
   };
 
@@ -36,15 +38,15 @@ const ListMintedTokens = ({ currentAccount, newMint, newMerge, loading, onLoadin
   };
 
   return (
-    <div>
+    <>
       {!loading && (
-        <>
-          <h3>Your Minted Tokens</h3>
-          <div>{listMintedTokens()}</div>
-          <h3>{mintsAvailable()}</h3>
-        </>
+        <div className="ListMintedTokens_Main">
+          <div className="ListMintedTokens-title">Your Minted Tokens</div>
+          <div className="ListMintedTokens-items">{listMintedTokens()}</div>
+          <div className="ListMintedTokens-mintsAvailable">{mintsAvailable()}</div>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
