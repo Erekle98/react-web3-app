@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "semantic-ui-react";
 
-import { metamaskProvider, ethersProvider } from "../ethereum/provider";
-import CopyToolTip from "./helpers/CopyToolTip";
-import "../components/helpers/CopyToolTip.css";
-import { getAccount } from "../ethereum/helperFuncs";
-import { CHAIN_ID, CHAIN_ID_HEX } from "../constants";
+import { metamaskProvider, ethersProvider } from "../../ethereum/provider";
+import CopyToolTip from "../helpers/copyToolTip/CopyToolTip";
+import "./Connection.css";
+import { getAccount } from "../../ethereum/helperFuncs";
+import { CHAIN_ID, CHAIN_ID_HEX } from "../../ethereum/constants";
+import Button from "../button/Button";
 
 const Connection = ({ onAccountChange, onConnect }) => {
   const [connected, setConnected] = useState(false);
@@ -104,15 +104,20 @@ const Connection = ({ onAccountChange, onConnect }) => {
   return (
     <div>
       {connected ? (
-        <div>
-          Connected to {networkType} network with account:{" "}
-          {currentAccount ? currentAccount.substring(0, 6) + "..." + currentAccount.substring(38, 42) : null}
-          <CopyToolTip textToCopy={currentAccount} />
+        <div className="Connection-addressNetwork">
+          <div className="Connection-addressNetwork-address">
+            <span>
+              Account:{" "}
+              {currentAccount ? currentAccount.substring(0, 6) + "..." + currentAccount.substring(38, 42) : null}
+            </span>
+            <span>
+              <CopyToolTip textToCopy={currentAccount} />
+            </span>
+          </div>
+          <span>Network: {networkType}</span>
         </div>
       ) : (
-        <Button onClick={connect} color="green">
-          Connect to wallet
-        </Button>
+        <Button onClick={connect}>Connect to wallet</Button>
       )}
     </div>
   );
