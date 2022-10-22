@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Modal } from "semantic-ui-react";
-
+import { useHistory } from "react-router-dom";
 import { ethers } from "ethers";
+
 import contract from "../ethereum/contracts/contract";
 import { getMintedTokensByAddress, getPriceAndMaxPerAddress } from "../ethereum/helperFuncs";
-import { MIN_MINT_QTY } from "../constants";
+import { MIN_MINT_QTY } from "../ethereum/contracts/constants";
 import { ethersProvider } from "../ethereum/provider";
+import Button from "./button/Button";
 
 const Mint = ({ currentAccount, onNewMint }) => {
   const [mintEnabled, setMintEnabled] = useState(false);
@@ -14,13 +15,17 @@ const Mint = ({ currentAccount, onNewMint }) => {
   const [mintedTokensByAddress, setMintedTokensByAddress] = useState(0);
   const [mintPrice, setMintPrice] = useState("");
   const [newMint, setNewMint] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const increaseRef = useRef(null);
   const decreaseRef = useRef(null);
 
+  let history = useHistory();
+
   useEffect(() => {
     getIfMintEnabled();
-    getPriceAndMaxPerAddress(setMintPrice, setMaxMintQty);
+    getPriceAndMaxPerAddress(setMintPrice, setMaxMintQty, setLoading);
   }, []);
 
   useEffect(() => {
@@ -32,11 +37,11 @@ const Mint = ({ currentAccount, onNewMint }) => {
   //   Helper functions
 
   const addLoading = (e) => {
-    e.target.classList.add("loading", "disabled");
+    setIsSubmitting(true);
   };
 
   const removeLoading = (e) => {
-    e.target.classList.remove("loading", "disabled");
+    setIsSubmitting(false);
   };
 
   //   Contract functions
@@ -46,76 +51,73 @@ const Mint = ({ currentAccount, onNewMint }) => {
     setMintEnabled(isMintEnabled);
   };
 
-  const mint = async (e) => {
-    addLoading(e);
+  const mint = async () => {
+    addLoading();
     try {
-      await contract.connect(ethersProvider().getSigner()).mint(mintQty, {
+      const mint = await contract.connect(ethersProvider().getSigner()).mint(mintQty, {
         value: parseInt(ethers.utils.parseEther(mintPrice).toString()) * mintQty,
       });
-      setNewMint(true);
-      onNewMint(true);
+      await mint.wait().then(() => {
+        setNewMint(true);
+        onNewMint(true);
+      });
     } catch (error) {
       alert(error.message);
+      removeLoading();
+      return;
     }
-    removeLoading(e);
+    removeLoading();
+    history.push("/");
   };
 
   return (
     <div>
-      {mintEnabled ? (
-        parseInt(mintedTokensByAddress) < parseInt(maxMintQty) ? (
-          <div>
-            <Modal trigger={<Button>Mint</Button>}>
-              <Modal.Header>Mint</Modal.Header>
-              <Modal.Content>
-                <Modal.Description>
-                  <p>
-                    Mint Price: {mintPrice} ETH
-                    <br />
-                    Max Mints Per Wallet: {maxMintQty}
-                    <br />
-                    Minted Tokens By Address: {mintedTokensByAddress}
-                    <br />
-                    <br />
-                  </p>
-                  <Button.Group>
-                    <Button
-                      ref={decreaseRef}
-                      disabled={mintQty === MIN_MINT_QTY}
-                      onClick={() => setMintQty(mintQty - 1)}
-                    >
-                      -
-                    </Button>
-                    <Button color="grey" disabled>
-                      {mintQty}
-                    </Button>
-                    <Button
-                      ref={increaseRef}
-                      disabled={mintQty === maxMintQty - mintedTokensByAddress}
-                      onClick={() => setMintQty(mintQty + 1)}
-                    >
-                      +
-                    </Button>
-                  </Button.Group>
-                </Modal.Description>
+      {!loading && (
+        <>
+          {mintEnabled ? (
+            parseInt(mintedTokensByAddress) < parseInt(maxMintQty) ? (
+              <div>
+                <h1>Mint</h1>
+                <p>
+                  Mint Price: {mintPrice} ETH
+                  <br />
+                  Max Mints Per Wallet: {maxMintQty}
+                  <br />
+                  Minted Tokens By Address: {mintedTokensByAddress}
+                  <br />
+                  <br />
+                </p>
                 <Button
-                  onClick={(e) => {
-                    mint(e);
+                  className={`${mintQty === MIN_MINT_QTY ? "disabled" : ""}`}
+                  ref={decreaseRef}
+                  onClick={() => setMintQty(mintQty - 1)}
+                >
+                  -
+                </Button>
+                <Button className="disabled">{mintQty}</Button>
+                <Button
+                  className={`${mintQty === maxMintQty - mintedTokensByAddress ? "disabled" : ""}`}
+                  ref={increaseRef}
+                  onClick={() => {
+                    setMintQty(mintQty + 1);
                   }}
                 >
+                  +
+                </Button>
+                <Button isSubmitting={isSubmitting} onClick={mint}>
                   Mint Now
                 </Button>
                 <p>
                   <b>Total Price: {(mintQty * mintPrice).toFixed(3)} ETH</b>
                 </p>
-              </Modal.Content>
-            </Modal>
-          </div>
-        ) : (
-          <Button disabled>Mint</Button>
-        )
-      ) : (
-        "Mint is not enabled"
+              </div>
+            ) : (
+              <Button className="disabled">Mint</Button>
+            )
+          ) : (
+            "Mint is not enabled"
+          )}
+        </>
       )}
     </div>
   );

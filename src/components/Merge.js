@@ -1,27 +1,33 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Modal, Button } from "semantic-ui-react";
+import { useHistory } from "react-router-dom";
+
 import contract from "../ethereum/contracts/contract";
-import getDataWithMulticall from "../ethereum/contracts/getTokensDataWithMulticall";
+import { getDataWithMulticall } from "../ethereum/helperFuncs";
 import { ethersProvider } from "../ethereum/provider";
+import Button from "./button/Button";
 
 const Merge = ({ currentAccount, newMint, onNewMerge }) => {
   const [addressMintedTokenIds, setAddressMintedTokenIds] = useState([]);
   const [disableMergeBtn, setDisableMergeBtn] = useState(true);
   const [newMerge, setNewMerge] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    getDataWithMulticall(setAddressMintedTokenIds, currentAccount);
+    getDataWithMulticall(setAddressMintedTokenIds, currentAccount, setLoading);
   }, [currentAccount, newMint, newMerge]);
+
+  let history = useHistory();
 
   const ref1Select = useRef(null);
   const ref2Select = useRef(null);
 
-  const addLoading = (e) => {
-    e.target.classList.add("loading", "disabled");
+  const addLoading = () => {
+    setIsSubmitting(true);
   };
 
-  const removeLoading = (e) => {
-    e.target.classList.remove("loading", "disabled");
+  const removeLoading = () => {
+    setIsSubmitting(false);
   };
 
   const disableEnableMergeButton = () => {
@@ -67,45 +73,39 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
     }
   };
 
-  const merge = async (e) => {
+  const merge = async () => {
     const tokenId1 = ref1Select.current.value;
     const tokenId2 = ref2Select.current.value;
-    addLoading(e);
+    addLoading();
     try {
-      await contract.connect(ethersProvider().getSigner()).merge(tokenId1, tokenId2);
-      setNewMerge(true);
-      onNewMerge(true);
+      const merge = await contract.connect(ethersProvider().getSigner()).merge(tokenId1, tokenId2);
+      await merge.wait().then(() => {
+        setNewMerge(true);
+        onNewMerge(true);
+      });
     } catch (error) {
       alert(error.message);
+      removeLoading();
+      return;
     }
-    removeLoading(e);
+    removeLoading();
+    history.push("/");
   };
 
   return (
-    <Modal
-      trigger={<Button>Merge</Button>}
-      onClose={() => {
-        setDisableMergeBtn(true);
-      }}
-    >
-      <Modal.Header>Merge</Modal.Header>
-      <Modal.Content>
-        <Modal.Description>
-          <h3>Select tokens you want to merge</h3>
-          <select ref={ref1Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref2Select)}>
-            {mintedTokensInMergeDropdown()}
-          </select>
-          <select ref={ref2Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref1Select)}>
-            {mintedTokensInMergeDropdown()}
-          </select>
-        </Modal.Description>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button disabled={disableMergeBtn} onClick={merge}>
-          Merge
-        </Button>
-      </Modal.Actions>
-    </Modal>
+    <div>
+      <h1>Merge</h1>
+      <h3>Select tokens you want to merge</h3>
+      <select ref={ref1Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref2Select)}>
+        {mintedTokensInMergeDropdown()}
+      </select>
+      <select ref={ref2Select} defaultValue="default" onChange={(e) => onSelectChange(e, ref1Select)}>
+        {mintedTokensInMergeDropdown()}
+      </select>
+      <Button isSubmitting={isSubmitting} className={disableMergeBtn ? "disabled" : ""} onClick={merge}>
+        Merge
+      </Button>
+    </div>
   );
 };
 
