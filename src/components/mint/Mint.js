@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { ethers } from "ethers";
 
-import contract from "../ethereum/contracts/contract";
-import { getMintedTokensByAddress, getPriceAndMaxPerAddress } from "../ethereum/helperFuncs";
-import { MIN_MINT_QTY } from "../ethereum/contracts/constants";
-import { ethersProvider } from "../ethereum/provider";
-import Button from "./button/Button";
+import contract from "../../ethereum/contracts/contract";
+import { getMintedTokensByAddress, getPriceAndMaxPerAddress } from "../../ethereum/helperFuncs";
+import { MIN_MINT_QTY } from "../../ethereum/contracts/constants";
+import { ethersProvider } from "../../ethereum/provider";
+import Button from "../button/Button";
+import "./Mint.css";
 
 const Mint = ({ currentAccount, onNewMint }) => {
   const [mintEnabled, setMintEnabled] = useState(false);
@@ -76,40 +77,42 @@ const Mint = ({ currentAccount, onNewMint }) => {
         <>
           {mintEnabled ? (
             parseInt(mintedTokensByAddress) < parseInt(maxMintQty) ? (
-              <div>
-                <h1>Mint</h1>
-                <p>
-                  Mint Price: {mintPrice} ETH
-                  <br />
-                  Max Mints Per Wallet: {maxMintQty}
-                  <br />
-                  Minted Tokens By Address: {mintedTokensByAddress}
-                  <br />
-                  <br />
-                </p>
-                <Button
-                  className={`${mintQty === MIN_MINT_QTY ? "disabled" : ""}`}
-                  ref={decreaseRef}
-                  onClick={() => setMintQty(mintQty - 1)}
-                >
-                  -
-                </Button>
-                <Button className="disabled">{mintQty}</Button>
-                <Button
-                  className={`${mintQty === maxMintQty - mintedTokensByAddress ? "disabled" : ""}`}
-                  ref={increaseRef}
-                  onClick={() => {
-                    setMintQty(mintQty + 1);
-                  }}
-                >
-                  +
-                </Button>
-                <Button isSubmitting={isSubmitting} onClick={mint}>
-                  Mint Now
-                </Button>
-                <p>
-                  <b>Total Price: {(mintQty * mintPrice).toFixed(3)} ETH</b>
-                </p>
+              <div className="Mint_Main">
+                <div className="Mint-title">Mint</div>
+                <div className="Mint-box">
+                  <div className="Mint-facts">
+                    <div className="Mint-fact">Mint Price: {mintPrice} ETH</div>
+                    <div className="Mint-fact next">Max Mints Per Wallet: {maxMintQty}</div>
+                    <div className="Mint-fact next">Minted Tokens By Address: {mintedTokensByAddress}</div>
+                  </div>
+                  <div className="Mint-minting">
+                    <div className="Mint-minting-qty">
+                      <Button
+                        className={`${mintQty === MIN_MINT_QTY ? "disabled" : ""}`}
+                        ref={decreaseRef}
+                        onClick={() => setMintQty(mintQty - 1)}
+                      >
+                        -
+                      </Button>
+                      <Button className="disabled">{mintQty}</Button>
+                      <Button
+                        className={`${mintQty === maxMintQty - mintedTokensByAddress ? "disabled" : ""}`}
+                        ref={increaseRef}
+                        onClick={() => {
+                          setMintQty(mintQty + 1);
+                        }}
+                      >
+                        +
+                      </Button>
+                    </div>
+                    <div className="Mint-minting-buttonDiv">
+                      <Button isSubmitting={isSubmitting} onClick={mint}>
+                        Mint Now
+                      </Button>
+                    </div>
+                    <div className="Mint-minting-totalPrice">Total Price: {(mintQty * mintPrice).toFixed(3)} ETH</div>
+                  </div>
+                </div>
               </div>
             ) : (
               <Button className="disabled">Mint</Button>
