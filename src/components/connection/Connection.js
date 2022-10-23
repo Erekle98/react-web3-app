@@ -4,9 +4,8 @@ import { metamaskProvider, ethersProvider } from "../../ethereum/provider";
 import CopyToolTip from "../copyToolTip/CopyToolTip";
 import "./Connection.css";
 import { getAccount } from "../../ethereum/helperFuncs";
-import { CHAIN_ID, CHAIN_ID_HEX } from "../../ethereum/constants";
 import Button from "../button/Button";
-import { ERROR_MESSAGE } from "../../ethereum/contracts/constants";
+import { ERROR_MESSAGE, CHAIN_ID_HEX, CHAIN_ID } from "../../ethereum/contracts/constants";
 
 const Connection = ({ onAccountChange, onConnect }) => {
   const [connected, setConnected] = useState(false);
