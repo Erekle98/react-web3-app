@@ -3,14 +3,15 @@ import { BrowserRouter, Route } from "react-router-dom";
 
 import { metamaskProvider, ethersProvider } from "../ethereum/provider";
 import NoMetamaskMessage from "./noMetamaskMessage/NoMetamaskMessage";
+import { getAccount } from "../ethereum/helperFuncs";
+import { CHAIN_ID } from "../ethereum/contracts/constants";
+
 import Header from "./header/Header";
 import MainPage from "./mainPage/MainPage";
 import Mint from "./mint/Mint";
 import Merge from "./merge/Merge";
-import "./Main.css";
-import { getAccount } from "../ethereum/helperFuncs";
-import { CHAIN_ID } from "../ethereum/contracts/constants";
 import EchoPage from "./EchoPage";
+import "./Main.css";
 
 const App = () => {
   const [connected, setConnected] = useState(false);
@@ -57,9 +58,7 @@ const App = () => {
       <>
         <Header onConnect={handleConnect} onAccountChange={handleAccountChange} />
         <EchoPage>
-          <h1>
-            You Need To Connect To Wallet With Goerli Test Network <br /> In Order To Use This App
-          </h1>
+          <h1>In Order To Use This App You Need To Connect To Wallet With Goerli Test Network</h1>
         </EchoPage>
       </>
     );

@@ -4,9 +4,10 @@ import { ethers } from "ethers";
 
 import contract from "../../ethereum/contracts/contract";
 import { getMintedTokensByAddress, getPriceAndMaxPerAddress } from "../../ethereum/helperFuncs";
-import { MIN_MINT_QTY } from "../../ethereum/contracts/constants";
+import { ERROR_MESSAGE, MIN_MINT_QTY } from "../../ethereum/contracts/constants";
 import { ethersProvider } from "../../ethereum/provider";
 import Button from "../button/Button";
+import Loading from "../loading/Loading";
 import "./Mint.css";
 
 const Mint = ({ currentAccount, onNewMint }) => {
@@ -56,14 +57,14 @@ const Mint = ({ currentAccount, onNewMint }) => {
     addLoading();
     try {
       const mint = await contract.connect(ethersProvider().getSigner()).mint(mintQty, {
-        value: parseInt(ethers.utils.parseEther(mintPrice).toString()) * mintQty,
+        value: (parseInt(ethers.utils.parseEther(mintPrice).toString()) * mintQty).toString(),
       });
       await mint.wait().then(() => {
         setNewMint(true);
         onNewMint(true);
       });
     } catch (error) {
-      alert(error.message);
+      alert(ERROR_MESSAGE);
       removeLoading();
       return;
     }
@@ -73,7 +74,7 @@ const Mint = ({ currentAccount, onNewMint }) => {
 
   return (
     <div>
-      {!loading && (
+      {!loading ? (
         <>
           {mintEnabled ? (
             parseInt(mintedTokensByAddress) < parseInt(maxMintQty) ? (
@@ -121,6 +122,8 @@ const Mint = ({ currentAccount, onNewMint }) => {
             "Mint is not enabled"
           )}
         </>
+      ) : (
+        <Loading />
       )}
     </div>
   );
