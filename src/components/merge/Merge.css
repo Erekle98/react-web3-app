@@ -41,3 +41,9 @@
 .Merge-box-buttonDiv {
     text-align: center;
 }
+
+@media (max-width: 768px) {
+    .Merge-box-selectDiv {
+        flex-direction: column;
+    }
+}

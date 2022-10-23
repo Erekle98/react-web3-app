@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 
+import { ERROR_MESSAGE } from "../../ethereum/contracts/constants";
 import contract from "../../ethereum/contracts/contract";
 import { getDataWithMulticall } from "../../ethereum/helperFuncs";
 import { ethersProvider } from "../../ethereum/provider";
 import Button from "../button/Button";
+import Loading from "../loading/Loading";
 import "./Merge.css";
 
 const Merge = ({ currentAccount, newMint, onNewMerge }) => {
@@ -89,7 +91,7 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
         onNewMerge(true);
       });
     } catch (error) {
-      alert(error.message);
+      alert(ERROR_MESSAGE);
       removeLoading();
       return;
     }
@@ -99,7 +101,7 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
 
   return (
     <>
-      {!loading && (
+      {!loading ? (
         <div className="Merge_Main">
           <div className="Merge-title">Merge</div>
           <div className="Merge-box">
@@ -120,6 +122,8 @@ const Merge = ({ currentAccount, newMint, onNewMerge }) => {
             </div>
           </div>
         </div>
+      ) : (
+        <Loading />
       )}
     </>
   );

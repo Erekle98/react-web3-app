@@ -6,6 +6,7 @@ import "./Connection.css";
 import { getAccount } from "../../ethereum/helperFuncs";
 import { CHAIN_ID, CHAIN_ID_HEX } from "../../ethereum/constants";
 import Button from "../button/Button";
+import { ERROR_MESSAGE } from "../../ethereum/contracts/constants";
 
 const Connection = ({ onAccountChange, onConnect }) => {
   const [connected, setConnected] = useState(false);
@@ -65,7 +66,7 @@ const Connection = ({ onAccountChange, onConnect }) => {
         });
     } catch (error) {
       notConnected();
-      alert(error.message);
+      alert(ERROR_MESSAGE);
       return;
     }
   };
@@ -91,12 +92,12 @@ const Connection = ({ onAccountChange, onConnect }) => {
         isConnected(account);
       } else {
         connectToGoerli().catch((error) => {
-          alert(error.message);
+          alert(ERROR_MESSAGE);
         });
       }
     } catch (error) {
       notConnected();
-      alert(error.message);
+      alert(ERROR_MESSAGE);
       return;
     }
   };

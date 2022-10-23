@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import ListMintedTokens from "../listMintedTokens/ListMintedTokens";
 import { getMintedTokensByAddress, getMaxPerAddress } from "../../ethereum/helperFuncs";
 import Button from "../button/Button";
+import Loading from "../loading/Loading";
 import "./MainPage.css";
 
 const MainPage = ({ currentAccount, newMint, newMerge }) => {
@@ -34,7 +35,7 @@ const MainPage = ({ currentAccount, newMint, newMerge }) => {
         loading={loading}
         onLoading={handleLoading}
       />
-      {!loading && (
+      {!loading ? (
         <div className="MainPage-bottom">
           {parseInt(mintedTokensByAddress) < parseInt(maxMintQty) ? (
             <Link to="/mint">
@@ -47,6 +48,8 @@ const MainPage = ({ currentAccount, newMint, newMerge }) => {
             <Button className="BigButton">Merge</Button>
           </Link>
         </div>
+      ) : (
+        <Loading />
       )}
     </div>
   );
