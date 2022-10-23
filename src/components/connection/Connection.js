@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { metamaskProvider, ethersProvider } from "../../ethereum/provider";
-import CopyToolTip from "../helpers/copyToolTip/CopyToolTip";
+import CopyToolTip from "../copyToolTip/CopyToolTip";
 import "./Connection.css";
 import { getAccount } from "../../ethereum/helperFuncs";
 import { CHAIN_ID, CHAIN_ID_HEX } from "../../ethereum/constants";
