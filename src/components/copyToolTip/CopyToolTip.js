@@ -1,8 +1,7 @@
 import React, { useRef } from "react";
-import { Icon } from "semantic-ui-react";
+import { CopySvg } from "../../assets/icons";
 
 import "./CopyToolTip.css";
-import "../../Main.css";
 
 const CopyToolTip = ({ textToCopy }) => {
   const refCopyText = useRef(null);
@@ -16,11 +15,14 @@ const CopyToolTip = ({ textToCopy }) => {
   };
 
   return (
-    <Icon name="copy" onClick={copy} className="ToolTip pointer">
-      <div ref={refCopyText} className="ToolTipText">
-        Copy to clipboard
+    <div className="ToolTip pointer">
+      <div onClick={copy} className="copySvg">
+        <CopySvg />
       </div>
-    </Icon>
+      <span ref={refCopyText} className="ToolTipText">
+        Copy to clipboard
+      </span>
+    </div>
   );
 };
 

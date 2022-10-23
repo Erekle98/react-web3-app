@@ -1,0 +1,20 @@
+.Connection-addressNetwork {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    background: -webkit-linear-gradient(rgb(63, 201, 168), rgb(28, 162, 196));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.Connection-addressNetwork-address {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

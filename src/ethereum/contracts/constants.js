@@ -1,3 +1,4 @@
+export const ERROR_MESSAGE = "Something went wrong";
 export const MIN_MINT_QTY = 1;
 export const CHAIN_ID = 5;
 export const CHAIN_ID_HEX = "0x5";

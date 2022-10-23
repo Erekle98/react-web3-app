@@ -1,0 +1,21 @@
+.MainPage_Main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #7c7894;
+}
+
+.MainPage-top {
+    margin-top: 50px;
+}
+
+.MainPage-bottom {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    color: #7c7894;
+    margin: 50px 0;
+}

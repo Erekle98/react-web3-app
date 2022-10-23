@@ -1,9 +1,11 @@
 .ToolTip {
     position: relative;
     display: inline-block;
+    margin-left: 5px;
 }
 
 .ToolTip .ToolTipText {
+    -webkit-text-fill-color: #ffffff;
     visibility: hidden;
     width: 120px;
     background-color: black;
@@ -31,4 +33,20 @@
 
 .ToolTip:hover .ToolTipText {
     visibility: visible;
+}
+
+.copySvg svg {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    .ToolTipText {
+        display: none;
+    }
 }

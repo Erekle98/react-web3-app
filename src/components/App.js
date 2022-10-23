@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { BrowserRouter, Route } from "react-router-dom";
-import { Container, Menu } from "semantic-ui-react";
 
-import { metamaskProvider } from "../ethereum/provider";
-import { WarningMessage } from "./helpers/Message";
-import MainPage from "./MainPage";
-import Connection from "./Connection";
-import Mint from "./Mint";
-import Merge from "./Merge";
+import { metamaskProvider, ethersProvider } from "../ethereum/provider";
+import NoMetamaskMessage from "./noMetamaskMessage/NoMetamaskMessage";
+import { getAccount } from "../ethereum/helperFuncs";
+import { CHAIN_ID } from "../ethereum/contracts/constants";
+
+import Header from "./header/Header";
+import MainPage from "./mainPage/MainPage";
+import Mint from "./mint/Mint";
+import Merge from "./merge/Merge";
+import EchoPage from "./EchoPage";
+import "./Main.css";
 
 const App = () => {
   const [connected, setConnected] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [newMint, setNewMint] = useState(false);
   const [newMerge, setNewMerge] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleConnect = (connection) => {
     setConnected(connection);
@@ -30,28 +35,39 @@ const App = () => {
     setNewMerge(newMerge);
   };
 
+  const ifConnected = async () => {
+    const account = await getAccount();
+    if (account) {
+      if ((await ethersProvider().getNetwork()).chainId === CHAIN_ID) {
+        setConnected(true);
+      }
+    } else {
+      setConnected(false);
+    }
+    setLoading(false);
+  };
+
+  useLayoutEffect(() => {
+    ifConnected();
+  }, []);
+
   if (!metamaskProvider()) {
-    return <WarningMessage header="You need a Metamask wallet to use this app" />;
-  } else if (!connected) {
+    return <NoMetamaskMessage />;
+  } else if (!connected && !loading) {
     return (
-      <Menu>
-        <Menu.Item position="right">
-          <Connection onConnect={handleConnect} onAccountChange={handleAccountChange} />
-        </Menu.Item>
-      </Menu>
+      <>
+        <Header onConnect={handleConnect} onAccountChange={handleAccountChange} />
+        <EchoPage>
+          <h1>In Order To Use This App You Need To Connect To Wallet With Goerli Test Network</h1>
+        </EchoPage>
+      </>
     );
-  } else {
+  } else if (!loading) {
     return (
       <div>
         <BrowserRouter>
-          <Container>
-            <div>
-              <Menu>
-                <Menu.Item position="right">
-                  <Connection onConnect={handleConnect} onAccountChange={handleAccountChange} />
-                </Menu.Item>
-              </Menu>
-            </div>
+          <Header onConnect={handleConnect} onAccountChange={handleAccountChange} />
+          <EchoPage>
             <Route path="/" exact>
               <MainPage currentAccount={currentAccount} newMint={newMint} newMerge={newMerge} />
             </Route>
@@ -61,7 +77,7 @@ const App = () => {
             <Route path="/merge" exact>
               <Merge currentAccount={currentAccount} onNewMerge={handleNewMerge} newMint={newMint} />
             </Route>
-          </Container>
+          </EchoPage>
         </BrowserRouter>
       </div>
     );

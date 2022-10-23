@@ -1,0 +1,47 @@
+body {
+    background-color: #18171c;
+    color: #7c7894;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    color: #ededed;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: none;
+}
+
+.Main {
+    height: 100%;
+}
+
+.Main-width {
+    flex-grow: 1;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 1008px) {
+    .Main-width {
+        padding: 20px 40px;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1007px) {
+    .Main-width {
+        padding: 0 40px;
+    }
+}
+
+@media (max-width: 640px) {
+    .Main-width {
+        padding: 0 20px;
+    }
+}
