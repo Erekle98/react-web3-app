@@ -64,22 +64,20 @@ const App = () => {
     );
   } else if (!loading) {
     return (
-      <div>
-        <BrowserRouter>
-          <Header onConnect={handleConnect} onAccountChange={handleAccountChange} />
-          <EchoPage>
-            <Route path="/" exact>
-              <MainPage currentAccount={currentAccount} newMint={newMint} newMerge={newMerge} />
-            </Route>
-            <Route path="/mint" exact>
-              <Mint currentAccount={currentAccount} onNewMint={handleNewMint} />
-            </Route>
-            <Route path="/merge" exact>
-              <Merge currentAccount={currentAccount} onNewMerge={handleNewMerge} newMint={newMint} />
-            </Route>
-          </EchoPage>
-        </BrowserRouter>
-      </div>
+      <BrowserRouter>
+        <Header onConnect={handleConnect} onAccountChange={handleAccountChange} />
+        <EchoPage>
+          <Route path="/" exact>
+            <MainPage currentAccount={currentAccount} newMint={newMint} newMerge={newMerge} />
+          </Route>
+          <Route path="/mint" exact>
+            <Mint currentAccount={currentAccount} onNewMint={handleNewMint} />
+          </Route>
+          <Route path="/merge" exact>
+            <Merge currentAccount={currentAccount} onNewMerge={handleNewMerge} newMint={newMint} />
+          </Route>
+        </EchoPage>
+      </BrowserRouter>
     );
   }
 };

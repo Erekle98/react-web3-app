@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { ethers } from "ethers";
 
@@ -19,9 +19,6 @@ const Mint = ({ currentAccount, onNewMint }) => {
   const [newMint, setNewMint] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const increaseRef = useRef(null);
-  const decreaseRef = useRef(null);
 
   let history = useHistory();
 
@@ -90,7 +87,6 @@ const Mint = ({ currentAccount, onNewMint }) => {
                     <div className="Mint-minting-qty">
                       <Button
                         className={`${mintQty === MIN_MINT_QTY ? "disabled" : ""}`}
-                        ref={decreaseRef}
                         onClick={() => setMintQty(mintQty - 1)}
                       >
                         -
@@ -98,7 +94,6 @@ const Mint = ({ currentAccount, onNewMint }) => {
                       <Button className="disabled">{mintQty}</Button>
                       <Button
                         className={`${mintQty === maxMintQty - mintedTokensByAddress ? "disabled" : ""}`}
-                        ref={increaseRef}
                         onClick={() => {
                           setMintQty(mintQty + 1);
                         }}

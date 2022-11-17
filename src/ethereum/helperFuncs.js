@@ -46,12 +46,11 @@ export const getDataWithMulticall = async (setState, currentAccount, onLoading) 
     })
   );
 
-  let mintedTokenIds = [];
-  for (let index in data) {
-    if (data[index] && data[index] === currentAccount) {
-      mintedTokenIds.push(parseInt(index) + 1);
-    }
-  }
-  setState(mintedTokenIds);
+  const indexes = data.reduce((r, n, i) => {
+    n === currentAccount && r.push(i + 1);
+    return r;
+  }, []);
+
+  setState(indexes);
   onLoading();
 };
